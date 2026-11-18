@@ -1,0 +1,95 @@
+// PROG101 - Student Attendance Monitoring System (design only, no source code)
+
+// ================= MAIN PROGRAM =================
+START
+    OUTPUT "Welcome to the Student Attendance Monitoring System."
+    // --- Declarations ---
+    DECLARE totalStudents, studentsCount, presentCount, absentCount AS Integer
+    DECLARE minStudents, maxStudents, attendanceTarget, studentID AS Integer
+    DECLARE studentName, attendanceStatus, presentCode, absentCode AS String
+    DECLARE attendancePercentage AS Real
+    // --- Fixed values (treated as constants: assigned once, never changed) ---
+    SET minStudents = 1
+    SET maxStudents = 100
+    SET attendanceTarget = 75
+    SET presentCode = "P"
+    SET absentCode = "A"
+    
+    // --- Step 1: get and validate the class size ---
+    OUTPUT "Enter the total number of students in the class (1 to 100): "
+    INPUT totalStudents
+    WHILE ValidateStudentCount(totalStudents, minStudents, maxStudents) = FALSE DO
+        OUTPUT "Invalid student count. Enter a whole number from 1 to 100."
+        INPUT totalStudents
+    END WHILE
+    
+    // --- Step 2: initialise counters ---
+    SET presentCount = 0
+    SET absentCount = 0
+    
+    // --- Step 3: process every student (loop runs exactly totalStudents times) ---
+    FOR studentsCount = 1 TO totalStudents STEP 1 DO
+        OUTPUT "Student " & studentsCount & " of " & totalStudents
+        OUTPUT "Enter student name: "
+        INPUT studentName
+        OUTPUT "Enter student ID: "
+        INPUT studentID
+        SET attendanceStatus = RecordAttendance(presentCode, absentCode)
+        // Module: CountAttendance (decision + counter update)
+        IF attendanceStatus = presentCode THEN
+            SET presentCount = presentCount + 1
+            OUTPUT studentName & " (" & studentID & ") marked PRESENT"
+        ELSE
+            SET absentCount = absentCount + 1
+            OUTPUT studentName & " (" & studentID & ") marked ABSENT"
+        END IF
+    END FOR
+    
+    // --- Step 4: calculate and report ---
+    SET attendancePercentage = CalculateAttendancePercentage(presentCount, totalStudents)
+    CALL GenerateAttendanceReport(totalStudents, presentCount, absentCount, attendancePercentage, attendanceTarget)
+    OUTPUT "Attendance session complete."
+END
+
+// ================= MODULES (FUNCTIONS) =================
+
+FUNCTION ValidateStudentCount(count AS Integer, minStudents AS Integer, maxStudents AS Integer) RETURNS Boolean
+    DECLARE isValid AS Boolean
+    IF count >= minStudents AND count <= maxStudents THEN
+        SET isValid = TRUE
+    ELSE
+        SET isValid = FALSE
+    END IF
+    RETURN isValid
+END FUNCTION
+
+FUNCTION RecordAttendance(presentCode AS String, absentCode AS String) RETURNS String
+    DECLARE status AS String
+    OUTPUT "Enter attendance status (P = Present, A = Absent): "
+    INPUT status
+    WHILE status != presentCode AND status != absentCode DO
+        OUTPUT "Invalid entry. Enter P for Present or A for Absent."
+        INPUT status
+    END WHILE
+    RETURN status
+END FUNCTION
+
+FUNCTION CalculateAttendancePercentage(present AS Integer, total AS Integer) RETURNS Real
+    DECLARE percentage AS Real
+    SET percentage = (present * 100) / total
+    RETURN percentage
+END FUNCTION
+
+FUNCTION GenerateAttendanceReport(total AS Integer, present AS Integer, absent AS Integer, percentage AS Real, target AS Integer)
+    OUTPUT "===== ATTENDANCE SUMMARY ====="
+    OUTPUT "Total students: " & total
+    OUTPUT "Students present: " & present
+    OUTPUT "Students absent: " & absent
+    OUTPUT "Attendance percentage: " & percentage & "%"
+    IF percentage >= target THEN
+        OUTPUT "Status: Attendance target met"
+    ELSE
+        OUTPUT "Status: Below target - follow-up recommended"
+    END IF
+    OUTPUT "Thank you. Attendance has been recorded successfully."
+END FUNCTION

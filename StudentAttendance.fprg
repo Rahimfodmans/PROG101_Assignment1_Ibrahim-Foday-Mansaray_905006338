@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<flowgorithm fileversion="4.2">
+    <attributes>
+        <attribute name="name" value="StudentAttendance"/>
+        <attribute name="authors" value="Administrator"/>
+        <attribute name="about" value=""/>
+        <attribute name="saved" value="2026-11-15 05:08:54 AM"/>
+        <attribute name="created" value="QWRtaW5pc3RyYXRvcjtERVNLVE9QLUs0SURCN007MjAyNi0xMS0xNTswMzoyNDo1MiBBTTszNjg5"/>
+        <attribute name="edited" value="QWRtaW5pc3RyYXRvcjtERVNLVE9QLUs0SURCN007MjAyNi0xMS0xNTswNTowODo1NCBBTTsxOzM4MDM="/>
+    </attributes>
+    <function name="Main" type="None" variable="">
+        <parameters/>
+        <body>
+            <output expression="&quot;Welcome to the student Attendance Monitoring System.&quot;" newline="True"/>
+            <declare name="totalStudents, studentsCount, presentCount, absentCount, minStudents, maxStudents, attendanceTarget, studentID" type="Integer" array="False" size=""/>
+            <declare name="studentName, attendanceStatus, presentCode, absentCode" type="String" array="False" size=""/>
+            <declare name="attendancePercentage" type="Real" array="False" size=""/>
+            <assign variable="minStudents" expression="1"/>
+            <assign variable="maxStudents" expression="100"/>
+            <assign variable="attendanceTarget" expression="75"/>
+            <assign variable="presentCode" expression="&quot;P&quot;"/>
+            <assign variable="absentCode" expression="&quot;A&quot;"/>
+            <output expression="&quot;Enter the total number of students (1 to 100):&quot;" newline="True"/>
+            <input variable="totalStudents"/>
+            <while expression="ValidateStudentCount (totalStudents, minStudents, maxStudents) = false">
+                <output expression="&quot;Invalid student count. Enter a whole number from 1 to 100.&quot;" newline="True"/>
+                <input variable="totalStudents"/>
+            </while>
+            <assign variable="presentCount" expression="0"/>
+            <assign variable="absentCount" expression="0"/>
+            <for variable="studentsCount" start="1" end="totalStudents" direction="inc" step="1">
+                <output expression="&quot;Student &quot; &amp; studentsCount &amp; &quot; of &quot; &amp; totalStudents" newline="True"/>
+                <output expression="&quot;Enter student name:&quot;" newline="True"/>
+                <input variable="studentName"/>
+                <output expression="&quot;Enter student ID:&quot;" newline="True"/>
+                <input variable="studentID"/>
+                <assign variable="attendanceStatus" expression="RecordAttendance (presentCode, absentCode)"/>
+                <if expression="attendanceStatus = presentCode">
+                    <then>
+                        <assign variable="presentCount" expression="presentCount +1"/>
+                        <output expression="StudentName &amp; &quot; (&quot; &amp; studentID &amp;&quot;) marked PRESENT&quot;" newline="True"/>
+                    </then>
+                    <else>
+                        <assign variable="absentCount" expression="absentCount +1"/>
+                        <output expression="StudentName &amp; &quot; (&quot; &amp; studentID &amp;&quot;) marked ABSENT&quot;" newline="True"/>
+                    </else>
+                </if>
+            </for>
+            <assign variable="AttendancePercentage" expression="CalculateAttendancePercentage (presentCount, totalStudents)"/>
+            <call expression="GenerateAttendanceReport (totalStudents, presentCount, absentCount, attendancePercentage, attendanceTarget)"/>
+            <output expression="&quot;Attendance session complete.&quot;" newline="True"/>
+        </body>
+    </function>
+    <function name="CalculateAttendancePercentage" type="Real" variable="percentage">
+        <parameters>
+            <parameter name="present" type="Integer" array="False"/>
+            <parameter name="total" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <declare name="percentage" type="Real" array="False" size=""/>
+            <assign variable="percentage" expression="(present * 100.0) / total"/>
+        </body>
+    </function>
+    <function name="GenerateAttendanceReport" type="None" variable="">
+        <parameters>
+            <parameter name="total" type="Integer" array="False"/>
+            <parameter name="present" type="Integer" array="False"/>
+            <parameter name="absent" type="Integer" array="False"/>
+            <parameter name="target" type="Integer" array="False"/>
+            <parameter name="percentage" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <output expression="&quot;===== ATTENDANCE SUMMARY =====&quot;" newline="True"/>
+            <output expression="&quot;Total students: &quot; &amp; total" newline="True"/>
+            <output expression="&quot;Students present: &quot; &amp; present" newline="True"/>
+            <output expression="&quot;Student absent: &quot; &amp; absent" newline="True"/>
+            <output expression="&quot;Attendance percentage: &quot; &amp; percentage &amp; &quot;%&quot;" newline="True"/>
+            <if expression="percentage &gt;= target">
+                <then>
+                    <output expression="&quot;Status: Attendance target met&quot;" newline="True"/>
+                </then>
+                <else>
+                    <output expression="&quot;Status: below target - follow-up recommended&quot;" newline="True"/>
+                </else>
+            </if>
+            <output expression="&quot;Thank you. Attendance has been recorded successfully.&quot;" newline="True"/>
+        </body>
+    </function>
+    <function name="RecordAttendance" type="String" variable="status">
+        <parameters>
+            <parameter name="presentCode" type="String" array="False"/>
+            <parameter name="absentCode" type="String" array="False"/>
+        </parameters>
+        <body>
+            <declare name="status" type="String" array="False" size=""/>
+            <output expression="&quot;Enter attendance status (P = present, A = Absent): &quot;" newline="True"/>
+            <input variable="status"/>
+            <while expression="status != presentCode &amp;&amp; status != absentCode">
+                <output expression="&quot;Invalid entry. Enter P for Present or A for Absent.&quot;" newline="True"/>
+                <output expression="status" newline="True"/>
+            </while>
+        </body>
+    </function>
+    <function name="ValidateStudentCount" type="Boolean" variable="isValid">
+        <parameters>
+            <parameter name="count" type="Integer" array="False"/>
+            <parameter name="minStudents" type="Integer" array="False"/>
+            <parameter name="maxStudents" type="Integer" array="False"/>
+        </parameters>
+        <body>
+            <declare name="isValid" type="Boolean" array="False" size=""/>
+            <if expression="count &gt;= minStudents &amp;&amp; count &lt;= maxStudents">
+                <then>
+                    <assign variable="isValid" expression="true"/>
+                </then>
+                <else>
+                    <assign variable="isValid" expression="false"/>
+                </else>
+            </if>
+        </body>
+    </function>
+</flowgorithm>
